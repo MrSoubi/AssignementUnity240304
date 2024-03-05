@@ -4,34 +4,69 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public Player player;
-    public Enemy enemy;
-
-    public GameObject eventSystem;
-
-    bool isPlayerTurn;
-
-    // Start is called before the first frame update
-    void Start()
+    // Singleton here, copied from https://www.gamecodeclub.com/le-singleton-dans-unity-un-objet-pour-les-gouverner-tous/
+    private static GameManager instance = null;
+    public static GameManager Instance => instance;
+    private void Awake()
     {
-        player.Initialize();
-        enemy.Initialize();
-
-        isPlayerTurn = true;
+        if (instance != null && instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        else
+        {
+            instance = this;
+        }
+        DontDestroyOnLoad(this.gameObject);
     }
 
-    private void Update()
+    // Shameless code here
+    //       | | |
+    //       v v v
+
+    public Fighter player;
+    public Fighter enemy;
+
+    bool isPlayerActive = true;
+
+    public void EndTurn()
     {
-        if (!isPlayerTurn)
+        // Check if someone died
+        if (player.health <= 0) // Player is dead
         {
-            enemy.Attack(player);
-            NextTurn();
+            GameOver();
+        }
+        else if (enemy.health <= 0) // Enemy is dead
+        {
+            Scavenge();
+        }
+        else // No one is dead : battle continues
+        {
+            isPlayerActive = !isPlayerActive;
+            player.GetComponent<PlayerController>().canTakeAction = isPlayerActive;
+            if (!isPlayerActive)
+            {
+                enemy.GetComponent<EnemyBehaviour>().TakeAction(player);
+            }
         }
     }
 
-    public void NextTurn()
+    public void GameOver()
     {
-        isPlayerTurn = !isPlayerTurn;
-        eventSystem.SetActive(isPlayerTurn);
+        // To be implemented
+    }
+
+    public void Scavenge()
+    {
+        StartNewBattle();
+    }
+
+    public void StartNewBattle()
+    {
+        isPlayerActive = true;
+        enemy.health = 60;
+        enemy.maxHealth = enemy.health;
+        enemy.baseDamage = 20;
     }
 }

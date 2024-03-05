@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class Fighter : MonoBehaviour
 {
-    protected int maxHealth;
-    protected int health;
+    public int maxHealth;
+    public int health;
 
-    protected int baseDamage;
+    public int baseDamage;
 
-    protected int potions;
+    public int potions;
+
+    (string Name, int Modifier) head;
+    (string Name, int Modifier) torso;
+    (string Name, int Modifier) hands;
+    (string Name, int Modifier) legs;
 
     public GameObject damageText;
     public GameObject defendText;
@@ -20,11 +25,18 @@ public class Fighter : MonoBehaviour
         damageText.SetActive(false);
         defendText.SetActive(false);
         focusText.SetActive(false);
+
+        head = ("Hair", 0);
+        torso = ("Skin", 0);
+        hands = ("Fingers", 0);
+        legs = ("Loincloth", 0);
     }
 
-    public virtual void TakeDamage(int amount)
+    public void TakeDamage(int amount)
     {
-        health -= amount;
+        int blockedDamage = amount * (head.Modifier + torso.Modifier + hands.Modifier + legs.Modifier) / 100;
+
+        health -= amount - blockedDamage;
         StartCoroutine(DisplayDamage(amount));
     }
 
@@ -37,21 +49,8 @@ public class Fighter : MonoBehaviour
     {
         ResetDisplay();
         target.TakeDamage(baseDamage);
-    }
 
-    public int GetHealth()
-    {
-        return health;
-    }
-
-    public int GetMaxHealth()
-    {
-        return maxHealth;
-    }
-
-    public int GetBaseDamage()
-    {
-        return baseDamage;
+        StartCoroutine(EndTurn());
     }
 
     public void Defend()
@@ -59,6 +58,8 @@ public class Fighter : MonoBehaviour
         ResetDisplay();
         defendText.SetActive(true);
         // To be implemented
+
+        StartCoroutine(EndTurn());
     }
 
     public void Focus()
@@ -66,11 +67,15 @@ public class Fighter : MonoBehaviour
         ResetDisplay();
         focusText.SetActive(true);
         // To be implemented
+
+        StartCoroutine(EndTurn());
     }
 
     public void UsePotion()
     {
         // to be implemented
+
+        StartCoroutine(EndTurn());
     }
 
     IEnumerator DisplayDamage(int damage)
@@ -79,7 +84,7 @@ public class Fighter : MonoBehaviour
 
         while (damageText.transform.position.y < 1)
         {
-            damageText.transform.position += new Vector3(0f, 0.5f * Time.deltaTime, 0f);
+            damageText.transform.position += new Vector3(0f, Time.deltaTime, 0f);
             yield return null;
         }
 
@@ -91,5 +96,11 @@ public class Fighter : MonoBehaviour
     {
         defendText.SetActive(false);
         focusText.SetActive(false);
+    }
+
+    IEnumerator EndTurn()
+    {
+        yield return new WaitForSeconds(2);
+        GameManager.Instance.EndTurn();
     }
 }
