@@ -11,10 +11,10 @@ public class Fighter : MonoBehaviour
 
     public int potions;
 
-    (string Name, int Modifier) head;
-    (string Name, int Modifier) torso;
-    (string Name, int Modifier) hands;
-    (string Name, int Modifier) legs;
+    public (string Name, int Modifier) head;
+    public (string Name, int Modifier) torso;
+    public (string Name, int Modifier) hands;
+    public (string Name, int Modifier) legs;
 
     public GameObject damageText;
     public GameObject defendText;
@@ -91,6 +91,28 @@ public class Fighter : MonoBehaviour
         damageText.SetActive(false);
         damageText.transform.position = transform.position;
     }
+    public int GetModifier(string part)
+    {
+        int value = 0;
+
+        switch (part)
+        {
+            case "head":
+                value = head.Modifier;
+                break;
+            case "hands":
+                value = hands.Modifier;
+                break;
+            case "torso":
+                value = torso.Modifier;
+                break;
+            case "legs":
+                value = legs.Modifier;
+                break;
+        }
+
+        return value;
+    }
 
     private void ResetDisplay()
     {
@@ -103,4 +125,25 @@ public class Fighter : MonoBehaviour
         yield return new WaitForSeconds(2);
         GameManager.Instance.EndTurn();
     }
+
+    public void Equip(string part, string name, int modifier)
+    {
+        switch (part)
+        {
+            case "head":
+                head = (name, modifier);
+                break;
+            case "hands":
+                hands = (name, modifier);
+                break;
+            case "torso":
+                torso = (name, modifier);
+                break;
+            case "legs":
+                legs = (name, modifier);
+                break;
+        }
+    }
+
+
 }
