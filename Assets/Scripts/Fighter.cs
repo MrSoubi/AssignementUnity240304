@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Fighter : MonoBehaviour
@@ -19,12 +20,19 @@ public class Fighter : MonoBehaviour
     public GameObject damageText;
     public GameObject defendText;
     public GameObject focusText;
+    public GameObject healthText;
+
+    int defense = 1; // 1 if not active, 2 if active
+    int focus = 1; // 1 if not active, 2 if active
+    int turnActivationDefense;
+    int turnActivationFocus;
 
     private void Start()
     {
         damageText.SetActive(false);
         defendText.SetActive(false);
         focusText.SetActive(false);
+        healthText.GetComponent<TextMeshProUGUI>().text = "HP ";
 
         head = ("Hair", 0);
         torso = ("Skin", 0);
@@ -35,20 +43,23 @@ public class Fighter : MonoBehaviour
     public void TakeDamage(int amount)
     {
         int blockedDamage = amount * (head.Modifier + torso.Modifier + hands.Modifier + legs.Modifier) / 100;
+        int totalDamage = (amount - blockedDamage) / defense;
 
-        health -= amount - blockedDamage;
-        StartCoroutine(DisplayDamage(amount));
+        health -= totalDamage;
+        StartCoroutine(DisplayDamage(totalDamage));
+        healthText.GetComponent<TextMeshProUGUI>().text = "HP " + health.ToString();
     }
 
     public void Heal(int amount)
     {
         health = Mathf.Min(health + amount, maxHealth);
+        healthText.GetComponent<TextMeshProUGUI>().text = "HP " + health.ToString();
     }
 
     public void Attack(Fighter target)
     {
         ResetDisplay();
-        target.TakeDamage(baseDamage);
+        target.TakeDamage(baseDamage * focus);
 
         StartCoroutine(EndTurn());
     }
@@ -57,8 +68,8 @@ public class Fighter : MonoBehaviour
     {
         ResetDisplay();
         defendText.SetActive(true);
-        // To be implemented
-
+        defense = 2;
+        turnActivationDefense = 2;
         StartCoroutine(EndTurn());
     }
 
@@ -66,20 +77,26 @@ public class Fighter : MonoBehaviour
     {
         ResetDisplay();
         focusText.SetActive(true);
-        // To be implemented
+        focus = 2;
+        turnActivationFocus = 2;
 
         StartCoroutine(EndTurn());
     }
 
     public void UsePotion()
     {
-        // to be implemented
+        if (potions > 0)
+        {
+            Heal(50);
+            potions--;
+        }
 
         StartCoroutine(EndTurn());
     }
 
     IEnumerator DisplayDamage(int damage)
     {
+        damageText.GetComponent<TextMeshProUGUI>().text = damage.ToString();
         damageText.SetActive(true);
 
         while (damageText.transform.position.y < 1)
@@ -91,6 +108,7 @@ public class Fighter : MonoBehaviour
         damageText.SetActive(false);
         damageText.transform.position = transform.position;
     }
+
     public int GetModifier(string part)
     {
         int value = 0;
@@ -118,11 +136,25 @@ public class Fighter : MonoBehaviour
     {
         defendText.SetActive(false);
         focusText.SetActive(false);
+        healthText.SetActive(true);
+        healthText.GetComponent<TextMeshProUGUI>().text = "HP " + health.ToString();
     }
 
     IEnumerator EndTurn()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
+        turnActivationDefense = Mathf.Max(0, turnActivationDefense - 1);
+        turnActivationFocus = Mathf.Max(0, turnActivationFocus - 1);
+
+        if (turnActivationFocus == 0)
+        {
+            focus = 1;
+        }
+        if (turnActivationDefense == 0)
+        {
+            defense = 1;
+        }
+
         GameManager.Instance.EndTurn();
     }
 

@@ -74,9 +74,8 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         gameOverScreen.SetActive(true);
-        gameOverScreen.transform.Find("Panel/Score").GetComponent<TextMeshProUGUI>().text = score.ToString();
-        gameOverScreen.transform.Find("Panel/Rounds").GetComponent<TextMeshProUGUI>().text = round.ToString();
-        // To be implemented
+        gameOverScreen.transform.Find("VLayout/Score").GetComponent<TextMeshProUGUI>().text = score.ToString();
+        gameOverScreen.transform.Find("VLayout/Rounds").GetComponent<TextMeshProUGUI>().text = round.ToString();
     }
 
     int modifier;
@@ -89,8 +88,8 @@ public class GameManager : MonoBehaviour
 
         scavengeScreen.SetActive(true);
 
-        scavengeScreen.transform.Find("Panel/Score").GetComponent<TextMeshProUGUI>().text = score.ToString();
-        scavengeScreen.transform.Find("Panel/Rounds").GetComponent<TextMeshProUGUI>().text = round.ToString();
+        scavengeScreen.transform.Find("VLayout/Score").GetComponent<TextMeshProUGUI>().text = "Score : " + score.ToString();
+        scavengeScreen.transform.Find("VLayout/Rounds").GetComponent<TextMeshProUGUI>().text = "Round n°" + round.ToString();
 
         if (Random.Range(0, 10) >= 7)
         {
@@ -99,9 +98,9 @@ public class GameManager : MonoBehaviour
             scavengeScreen.transform.Find("Panel/PotionPanel").gameObject.SetActive(true);
             player.potions++;
 
-            Debug.Log(player.potions);
+/*            Debug.Log(player.potions);
             scavengeScreen.transform.Find("Panel/Rounds").GetComponent<TextMeshProUGUI>().text = round.ToString();
-            scavengeScreen.transform.Find("Panel/Score").GetComponent<TextMeshProUGUI>().text = score.ToString();
+            scavengeScreen.transform.Find("Panel/Score").GetComponent<TextMeshProUGUI>().text = score.ToString();*/
         }
         else
         {
@@ -174,9 +173,9 @@ public class GameManager : MonoBehaviour
 
         isPlayerActive = true;
         player.GetComponent<PlayerController>().canTakeAction = true;
-        enemy.health = 60;
+        enemy.health = Random.Range(50, 76);
         enemy.maxHealth = enemy.health;
-        enemy.baseDamage = 20;
+        enemy.baseDamage = Random.Range(20, 41);
     }
 
     public void Quit()
