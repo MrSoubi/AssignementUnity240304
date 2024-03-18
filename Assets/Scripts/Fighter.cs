@@ -12,6 +12,8 @@ public class Fighter : MonoBehaviour
 
     public int potions;
 
+    GameObject equipment;
+
     public (string Name, int Modifier) head;
     public (string Name, int Modifier) torso;
     public (string Name, int Modifier) hands;
@@ -176,6 +178,4 @@ public class Fighter : MonoBehaviour
                 break;
         }
     }
-
-
 }
