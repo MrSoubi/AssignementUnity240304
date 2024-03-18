@@ -12,7 +12,7 @@ public class Fighter : MonoBehaviour
 
     public int potions;
 
-    GameObject equipment;
+    Inventory inventory;
 
     public (string Name, int Modifier) head;
     public (string Name, int Modifier) torso;
@@ -31,6 +31,8 @@ public class Fighter : MonoBehaviour
 
     private void Start()
     {
+        inventory = GetComponent<GameObject>();
+
         damageText.SetActive(false);
         defendText.SetActive(false);
         focusText.SetActive(false);
